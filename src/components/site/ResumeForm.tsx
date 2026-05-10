@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
-const WEBHOOK = "https://arifen.app.n8n.cloud/webhook-test/b3f349cc-ea6e-488c-b4c2-6e7ad4f6d276";
+const WEBHOOK = "https://arifen.app.n8n.cloud/webhook/b3f349cc-ea6e-488c-b4c2-6e7ad4f6d276";
 
 const schema = z.object({
   fullName: z.string().trim().min(2, "Enter your full name").max(100),
