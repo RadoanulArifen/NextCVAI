@@ -76,11 +76,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "NextCV AI — AI Resume Builder for ATS-Ready Resumes" },
       { name: "description", content: "NextCV AI builds modern, ATS-friendly resumes in seconds. AI writing, smart skills, and beautiful templates trusted by engineers and job seekers." },
       { name: "author", content: "NextCV AI" },
-      { property: "og:title", content: "NextCV AI — AI Resume Builder" },
-      { property: "og:description", content: "Generate ATS-ready resumes with AI. Beautiful templates, instant PDF, smart suggestions." },
+      { property: "og:title", content: "NextCV AI — AI Resume Builder for ATS-Ready Resumes" },
+      { property: "og:description", content: "NextCV AI builds modern, ATS-friendly resumes in seconds. AI writing, smart skills, and beautiful templates trusted by engineers and job seekers." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "NextCV AI — AI Resume Builder for ATS-Ready Resumes" },
+      { name: "twitter:description", content: "NextCV AI builds modern, ATS-friendly resumes in seconds. AI writing, smart skills, and beautiful templates trusted by engineers and job seekers." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a3a7fc9d-1e11-4a03-a6d6-b39129eb865a/id-preview-1b8f9f22--f0538ea2-2a11-4679-8c86-ba2bf0185707.lovable.app-1778407867799.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a3a7fc9d-1e11-4a03-a6d6-b39129eb865a/id-preview-1b8f9f22--f0538ea2-2a11-4679-8c86-ba2bf0185707.lovable.app-1778407867799.png" },
     ],
     links: [
       {
