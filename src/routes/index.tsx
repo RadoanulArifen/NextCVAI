@@ -7,16 +7,13 @@ import {
   CheckCircle2,
   Cpu,
   Download,
-  FileText,
   Github,
   Linkedin,
   ScanLine,
-  Shield,
   Sparkles,
   Star,
   Twitter,
   Wand2,
-  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
