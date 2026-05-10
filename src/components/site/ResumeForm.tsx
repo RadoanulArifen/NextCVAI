@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, Download, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,6 +38,8 @@ const initial: FormState = {
 export function ResumeForm() {
   const [data, setData] = useState<FormState>(initial);
   const [loading, setLoading] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const update = (k: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setData((d) => ({ ...d, [k]: e.target.value }));
@@ -50,6 +52,8 @@ export function ResumeForm() {
       return;
     }
     setLoading(true);
+    setPdfUrl(null);
+    setSuccess(false);
     try {
       const res = await fetch(WEBHOOK, {
         method: "POST",
@@ -57,8 +61,34 @@ export function ResumeForm() {
         body: JSON.stringify({ ...parsed.data, source: "NextCV AI Landing", submittedAt: new Date().toISOString() }),
       });
       if (!res.ok) throw new Error(`Status ${res.status}`);
-      toast.success("Resume request sent! Our AI is working on it.");
-      setData(initial);
+      const contentType = res.headers.get("content-type") ?? "";
+      let url: string | null = null;
+      if (contentType.includes("application/pdf")) {
+        const blob = await res.blob();
+        url = URL.createObjectURL(blob);
+      } else {
+        // Try parsing JSON for a pdf url/base64
+        try {
+          const clone = res.clone();
+          const json = await clone.json();
+          const maybeUrl = json?.pdfUrl || json?.url || json?.fileUrl;
+          const base64 = json?.pdfBase64 || json?.base64;
+          if (maybeUrl && typeof maybeUrl === "string") {
+            url = maybeUrl;
+          } else if (base64 && typeof base64 === "string") {
+            const byteChars = atob(base64);
+            const bytes = new Uint8Array(byteChars.length);
+            for (let i = 0; i < byteChars.length; i++) bytes[i] = byteChars.charCodeAt(i);
+            const blob = new Blob([bytes], { type: "application/pdf" });
+            url = URL.createObjectURL(blob);
+          }
+        } catch {
+          // not JSON, ignore
+        }
+      }
+      setPdfUrl(url);
+      setSuccess(true);
+      toast.success("Your AI resume is ready!");
     } catch (err) {
       toast.error("Something went wrong. Please try again.");
       console.error(err);
@@ -77,6 +107,37 @@ export function ResumeForm() {
 
   return (
     <form onSubmit={submit} className="rounded-3xl glass p-6 shadow-elegant md:p-10">
+      {success && (
+        <div className="mb-6 rounded-2xl border border-primary/30 bg-primary/5 p-5">
+          <div className="flex items-start gap-3">
+            <CheckCircle2 className="mt-0.5 h-6 w-6 text-primary" />
+            <div className="flex-1">
+              <h4 className="text-base font-semibold">Resume generated successfully</h4>
+              <p className="text-sm text-muted-foreground">
+                {pdfUrl ? "Preview your resume below or download the PDF." : "Our AI has processed your details."}
+              </p>
+              {pdfUrl && (
+                <div className="mt-4 space-y-3">
+                  <div className="overflow-hidden rounded-xl border border-border/60 bg-background">
+                    <iframe
+                      src={pdfUrl}
+                      title="Generated Resume"
+                      className="h-[600px] w-full"
+                    />
+                  </div>
+                  <a
+                    href={pdfUrl}
+                    download="NextCV-Resume.pdf"
+                    className="inline-flex items-center gap-2 rounded-xl gradient-bg px-4 py-2 text-sm font-medium text-primary-foreground shadow-glow hover:opacity-95"
+                  >
+                    <Download className="h-4 w-4" /> Download PDF
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       <div className="mb-8 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-bg shadow-glow">
           <Sparkles className="h-5 w-5 text-primary-foreground" />
